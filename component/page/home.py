@@ -115,5 +115,4 @@ def fragment():
 
 st.html("component/style/image.html")
 
-with st.spinner("in progress"):
-    fragment()
+fragment()
