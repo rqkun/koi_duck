@@ -1,0 +1,10 @@
+[theme]
+base = "dark"
+primaryColor = "#3d9df3"
+baseFontSize = 16
+
+[client]
+toolbarMode = "minimal"
+
+[server]
+runOnSave = true
