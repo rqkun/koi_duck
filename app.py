@@ -16,7 +16,7 @@ st.html("component/style/hide-anchor.html")
 logging.basicConfig(level=st.secrets["logging"]["INFO"], format='%(asctime)s - %(levelname)s - %(message)s')
 
 if not st.user.is_logged_in:
-    with st.container(border=False, vertical_alignment="center", horizontal_alignment="center", height=300, gap="large"):
+    with st.container(border=False, vertical_alignment="center", horizontal_alignment="center", height="stretch", gap="large"):
         
         left, right = st.columns(2, vertical_alignment="center")
         
