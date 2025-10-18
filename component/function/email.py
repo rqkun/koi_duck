@@ -110,5 +110,5 @@ def send(ingredients, recipes):
     server.starttls()
     server.login(EMAIL_SENDER, st.secrets["email_auth"]["password"])
     server.sendmail(EMAIL_SENDER, EMAIL_RECEIVER, msg.as_string())
-    server.sendmail(EMAIL_SENDER, st.secrets["email_auth"]["chief"], msg.as_string())
+    server.sendmail(EMAIL_SENDER, st.secrets["email_auth"]["chef"], msg.as_string())
     server.quit()
