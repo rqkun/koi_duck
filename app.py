@@ -10,7 +10,7 @@ st.set_page_config(
     page_icon=Image.open("static/logo.png")
 )
 
-st.html("component/style/hide-anchor.html")
+st.html("component/style/app.html")
 
 logging.basicConfig(level=st.secrets["logging"]["INFO"], format='%(asctime)s - %(levelname)s - %(message)s')
 

@@ -4,17 +4,6 @@ import component.constants as constants
 
 st.set_page_config(page_title="Racoon Chef", page_icon="🍳", layout="centered")
 
-st.markdown("""
-<style>
-    .footer {
-        margin-top: 3rem;
-        text-align: center;
-        color: #888;
-        font-size: 0.9em;
-    }
-</style>
-""", unsafe_allow_html=True)
-
 st.markdown("<h1 style='text-align:center;'>🍽️ Racoon Chef</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align:center;color:#555;'>Select ingredients, discover recipes, and send your plan to the racoon!</p>", unsafe_allow_html=True)
 

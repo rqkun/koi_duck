@@ -118,3 +118,5 @@ def fragment():
 st.html("component/style/image.html")
 
 fragment()
+
+st.markdown("<div class='footer'>🍀 Made with love.</div>", unsafe_allow_html=True)

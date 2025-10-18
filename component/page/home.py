@@ -21,23 +21,6 @@ DATEIME = st.secrets["variable"]["anniversary"]
 
 ANNIVERSARY_DATE = datetime(DATEIME[0], DATEIME[1], DATEIME[2], tzinfo=tz_obj) 
 
-st.markdown("""
-<style>
-.anniversary-card {
-    background: linear-gradient(135deg, #ff4e50, #f9d423);
-    padding: 2rem;
-    border-radius: 0.5rem;
-    text-align: center;
-    color: white;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
-}
-.main-count {
-    font-size: 4em;
-    font-weight: bold;
-}
-</style>
-""", unsafe_allow_html=True)
-
 def navto(page):
     st.switch_page(f"component/page/{page}.py")
 
@@ -125,3 +108,5 @@ with home_r.container(border=False,
         horizontal.show("static/cook.png",None,"The page for lunch ingredient picking")
         if st.button("Cooking", key="nav_to_cook", use_container_width=True, type="primary", icon=":material/fork_spoon:"):
             navto("cooking")
+            
+st.markdown("<div class='footer'>🍀 Made with love.</div>", unsafe_allow_html=True)
