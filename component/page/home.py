@@ -11,15 +11,15 @@ st.set_page_config(
     page_icon=Image.open("static/logo.png")
 )
 
-# --- TIMEZONE HANDLING ---
 try:
-    tz = st.context.timezone  # user's local timezone
+    tz = st.context.timezone
     tz_obj = pytz.timezone(tz)
 except Exception:
     tz_obj = pytz.timezone("UTC")
 
+DATEIME = st.secrets["variable"]["anniversary"]
 
-ANNIVERSARY_DATE = datetime(2025, 8, 17,tzinfo=tz_obj) 
+ANNIVERSARY_DATE = datetime(DATEIME[0], DATEIME[1], DATEIME[2], tzinfo=tz_obj) 
 
 st.markdown("""
 <style>
@@ -50,7 +50,6 @@ def add_months(date, months, tz_obj):
         31,30,31,30,31,31,30,31,30,31][month-1])
     return datetime(year, month, day, tzinfo=tz_obj)
 
-# --- Exact years and months difference ---
 def calc_years_months(start, end):
     years = end.year - start.year
     months = end.month - start.month
