@@ -3,10 +3,9 @@ from component.function import images
 from component.navigation import header
 from PIL import Image
 import logging
-import streamlit_antd_components as sac
 
 st.set_page_config(
-    page_title="Koi",
+    page_title="Koiduck",
     layout="centered",
     page_icon=Image.open("static/logo.png")
 )

@@ -1,118 +1,128 @@
 import streamlit as st
-import component.function.dialogs as dialogs
-from component.function import images, audio
-import logging
-import streamlit_antd_components as sac
+import component.card.horizontal as horizontal
+import streamlit as st
+from datetime import datetime, timezone
+import pytz
+from PIL import Image
 
-@st.fragment()
-def fragment():
+st.set_page_config(
+    page_title="Koiduck",
+    layout="centered",
+    page_icon=Image.open("static/logo.png")
+)
+
+# --- TIMEZONE HANDLING ---
+try:
+    tz = st.context.timezone  # user's local timezone
+    tz_obj = pytz.timezone(tz)
+except Exception:
+    tz_obj = pytz.timezone("UTC")
+
+
+ANNIVERSARY_DATE = datetime(2025, 8, 17,tzinfo=tz_obj) 
+
+st.markdown("""
+<style>
+.anniversary-card {
+    background: linear-gradient(135deg, #ff4e50, #f9d423);
+    padding: 2rem;
+    border-radius: 0.5rem;
+    text-align: center;
+    color: white;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+}
+.main-count {
+    font-size: 4em;
+    font-weight: bold;
+}
+</style>
+""", unsafe_allow_html=True)
+
+def navto(page):
+    st.switch_page(f"component/page/{page}.py")
+
+def add_months(date, months, tz_obj):
+    month = date.month - 1 + months
+    year = date.year + month // 12
+    month = month % 12 + 1
+    day = min(date.day, [31,
+        29 if year % 4 == 0 and (year % 100 != 0 or year % 400 == 0) else 28,
+        31,30,31,30,31,31,30,31,30,31][month-1])
+    return datetime(year, month, day, tzinfo=tz_obj)
+
+# --- Exact years and months difference ---
+def calc_years_months(start, end):
+    years = end.year - start.year
+    months = end.month - start.month
+    if end.day < start.day:
+        months -= 1
+    if months < 0:
+        years -= 1
+        months += 12
+    return years, months
+
+def format_duration(years, months):
+    parts = []
+    if years > 0:
+        parts.append(f"{years} year{'s' if years > 1 else ''}")
+    if months > 0:
+        parts.append(f"{months} month{'s' if months > 1 else ''}")
+    return " ".join(parts) if parts else "—"
+
+now = datetime.now(timezone.utc).astimezone(tz_obj)
+
+years_since, months_since = calc_years_months(ANNIVERSARY_DATE, now)
+months_since_total = years_since * 12 + months_since
+days_since = (now - ANNIVERSARY_DATE).days
+
+subcount_text = format_duration(years_since, months_since)
+
+next_month_total = months_since_total + 1
+next_milestone_date = add_months(ANNIVERSARY_DATE, next_month_total, tz_obj)
+if next_milestone_date < now:
+    next_month_total += 1
+    next_milestone_date = add_months(ANNIVERSARY_DATE, next_month_total, tz_obj)
+
+days_until_next_milestone = (next_milestone_date - now).days
+next_years, next_months = divmod(next_month_total, 12)
+next_milestone_label = format_duration(next_years, next_months)
+
+this_year_anniv = ANNIVERSARY_DATE.replace(year=now.year)
+if this_year_anniv < now:
+    next_year_anniv = this_year_anniv.replace(year=now.year + 1)
+else:
+    next_year_anniv = this_year_anniv
+days_until_next_year = (next_year_anniv - now).days
+
+
+home_l, home_r = st.columns([1,1], width="stretch")
+
+with home_l:
+
+    st.markdown(f"""
+    <div class='anniversary-card'>
+        <div class='main-count'>{days_since:,} 💖</div>
+    </div><br>""", unsafe_allow_html=True)
     
-    if 'story_key' not in st.session_state:
-        st.session_state.story_key = 1
-
-    if 'dialog_key' not in st.session_state:
-        st.session_state.dialog_key = 0
-
-    if 'answer_quesion' not in st.session_state:
-        st.session_state.answer_quesion = False
-
-    if 'end' not in st.session_state:
-        st.session_state.end = False
-
-    if 'accept' not in st.session_state:
-        st.session_state.accept = False
     
-    try:
-        story = st.secrets["story"][str(st.session_state.story_key)]
-    except KeyError:
-        st.session_state.story_key = st.session_state.story_key - 1
-        st.session_state.end = True
-        st.rerun(scope="fragment")
+    st.info(f"{subcount_text}", icon= ":material/calendar_month:")
+    
+    st.caption("Days until next anniversary:")
+    with st.container(horizontal=True, gap=None):
+    
+        st.badge(f"⏳Month: {days_until_next_milestone} days")
+        st.badge(f"📅Year: {days_until_next_year} days")
 
+with home_r.container(border=False,
+                    width="stretch",
+                    horizontal_alignment="center",
+                    vertical_alignment="top"):
+    with st.container(border=True):
+        horizontal.show("static/1/0.png",None,"The page for rewatching the confession")
+        if st.button("Confession", key="nav_to_confession", use_container_width=True, type="primary", icon=":material/heart_plus:"):
+            navto("confession")
 
-    if st.session_state.end is False:
-        
-        st.session_state.default_dialog = story["dialogs"][st.session_state.dialog_key]
-
-        with st.container():
-            
-            left,right = st.columns([4,6])
-            
-            with left.container(height="stretch",border=False,vertical_alignment="center",horizontal_alignment="center"):
-                logging.info(f"story-{st.session_state.story_key}_dialog-{st.session_state.dialog_key}")
-                st.markdown(images.load_img_html(f"static/{st.session_state.story_key}/{st.session_state.dialog_key}.png"),unsafe_allow_html=True)
-                st.write("\n")
-                st.audio("static/bgm.mp3", loop=True, autoplay=True)
-                
-            with right.container(border=True,height="stretch",vertical_alignment="top",horizontal_alignment="center"):
-                place_holder = st.empty()
-                
-            sac.divider(label='ラン', icon='heart', align='center', color='gray')
-
-            with st.container(border=False,vertical_alignment="center",horizontal_alignment="center"):
-                
-                inner_left, inner_right = st.columns(2, vertical_alignment= "center")
-
-                if story.question is False:
-                    if inner_left.button("Next", icon=":material/fast_forward:" , type="primary", disabled=st.session_state.end, use_container_width=True, width="stretch"):
-                        if st.session_state.dialog_key < story.count-1:
-                            st.session_state.dialog_key += 1
-                            st.session_state.default_dialog = story["dialogs"][st.session_state.dialog_key]
-                            st.rerun(scope="fragment")
-                                                
-                        else: 
-                            st.session_state.story_key += 1
-                            st.session_state.dialog_key = 0
-                            st.session_state.default_dialog = story["dialogs"][st.session_state.dialog_key]
-                            st.rerun(scope="fragment")
-                            
-                else:
-                    if st.session_state.answer_quesion is False:
-                        with inner_left.popover("Options",disabled=st.session_state.end, use_container_width=True, width="stretch"):
-                            if st.button(key="Yes", label=story["dialogs"][1], icon=":material/check:" , type="tertiary", use_container_width=True):
-                                st.session_state.answer_quesion = True
-                                st.session_state.dialog_key = 2
-                                
-                                if st.session_state.story_key == 7:
-                                    st.session_state.accept = True                            
-                                st.rerun(scope="fragment")
-                                
-                            if st.button(key="No", label=story["dialogs"][3], icon=":material/close:" , type="tertiary", use_container_width=True):
-                                st.session_state.answer_quesion = True
-                                st.session_state.dialog_key = 4
-                                st.rerun(scope="fragment")
-                                
-                    else:
-                        if inner_left.button("Next", icon=":material/fast_forward:" , type="primary", disabled=st.session_state.end, use_container_width=True, width="stretch"):
-                            if st.session_state.dialog_key in [2,4]:
-                                st.session_state.dialog_key = 5
-                                st.rerun(scope="fragment")
-                                
-                            elif st.session_state.dialog_key == 5: 
-                                st.session_state.story_key += 1
-                                st.session_state.dialog_key = 0
-                                st.session_state.answer_quesion = False
-                                st.rerun(scope="fragment")
-                
-            
-                if inner_right.button("Reset", icon=":material/restart_alt:", type="secondary", use_container_width=True, width="stretch"):
-                    st.session_state.clear()
-                    st.rerun(scope="fragment")
-
-
-            with place_holder:
-                if story.question is False:
-                    st.write_stream(dialogs.stream_data(story["dialogs"][st.session_state.dialog_key]))
-                else:
-                    st.write_stream(dialogs.stream_data(st.session_state.default_dialog))
-
-    else:
-        if st.session_state.accept:
-            st.balloons()
-            sac.result(label='200 SUCCESS', description=st.secrets["result"]["accept"], status='success')
-        else:
-            sac.result(label="418 I'M A TEAPOT", description=st.secrets["result"]["deny"], status='warning')
-
-st.html("component/style/image.html")
-
-fragment()
+    with st.container(border=True):
+        horizontal.show("static/cook.png",None,"The page for lunch ingredient picking")
+        if st.button("Cooking", key="nav_to_cook", use_container_width=True, type="primary", icon=":material/fork_spoon:"):
+            navto("cooking")
