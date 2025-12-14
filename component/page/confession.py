@@ -1,13 +1,11 @@
 import streamlit as st
 import component.function.dialogs as dialogs
-from component.function import images, audio
+from component.function import images
 import logging
 import streamlit_antd_components as sac
 
-st.set_page_config(page_title="Confession", page_icon="❤️", layout="centered")
-
 @st.fragment()
-def fragment():
+def show():
     
     if 'story_key' not in st.session_state:
         st.session_state.story_key = 1
@@ -36,7 +34,9 @@ def fragment():
         
         st.session_state.default_dialog = story["dialogs"][st.session_state.dialog_key]
 
-        with st.container():
+        _, mid, _ = st.columns([1,3,1])
+        
+        with mid.container():
             
             left,right = st.columns([4,6])
             
@@ -115,8 +115,4 @@ def fragment():
         else:
             sac.result(label="418 I'M A TEAPOT", description=st.secrets["result"]["deny"], status='warning')
 
-st.html("component/style/image.html")
-
-fragment()
-
-st.markdown("<div class='footer'>🍀 Made with love.</div>", unsafe_allow_html=True)
+show()

@@ -1,11 +1,21 @@
 <style>
-    [data-testid='stHeaderActionElements'] {display: none;}
-    
+
+    div.block-container {padding-top:6rem;}
+
     .footer {
-        margin-top: 3rem;
+        margin-top: 2rem;
         text-align: center;
         color: #888;
         font-size: 0.9em;
+        position: absolute;
+        width: 100%;
+    }
+    
+    .stButton {
+        flex-shrink: 1 !important;
+        flex-grow: 1 !important;
+        text-wrap: no-wrap !important;
+        text-overflow: ellipsis !important;
     }
 
     .anniversary-card {
@@ -15,6 +25,7 @@
         text-align: center;
         color: white;
         box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+        padding-left: 0.5vh;
     }
 
     .main-count {

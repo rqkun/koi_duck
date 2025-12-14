@@ -1,7 +1,3 @@
-import streamlit as st
+import component.function.authentication as authentication
 
-st.logout()
-st.cache_data.clear()
-st.cache_resource.clear()
-st.session_state.clear()
-st.rerun()
+authentication.logout()
